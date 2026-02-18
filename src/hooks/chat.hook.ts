@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { ChatMsg } from "@/types/chat.type";
-import { parseChatResponse } from "@/lib/utils";
+import type { ChatMsg, StreamChunk } from "@/types/chat.type";
+import { consumeSse } from "@/lib/sse";
 
 type UseChatOptions = {
   endpoint?: string;
@@ -11,7 +11,7 @@ type UseChatOptions = {
 };
 
 export const useChat = ({
-  endpoint = "/api/chat",
+  endpoint = "/api/chat/stream",
   sessionId,
   messages,
   setMessages,
@@ -25,8 +25,15 @@ export const useChat = ({
   }, [messages.length]);
 
   const appendMessage = useCallback(
-    (msg: ChatMsg) => {
-      setMessages((prev) => [...prev, msg]);
+    (msg: ChatMsg) => setMessages((prev) => [...prev, msg]),
+    [setMessages],
+  );
+
+  const appendToMessage = useCallback(
+    (id: string, delta: string) => {
+      setMessages((prev) =>
+        prev.map((m) => (m.id === id ? { ...m, text: m.text + delta } : m)),
+      );
     },
     [setMessages],
   );
@@ -42,30 +49,33 @@ export const useChat = ({
     setInput("");
     setIsSending(true);
 
+    const assistantId = crypto.randomUUID();
+    appendMessage({ id: assistantId, role: "assistant", text: "" });
+
     try {
       const res = await fetch(endpoint, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "text/event-stream",
+        },
         body: JSON.stringify({ message: text, sessionId }),
       });
 
-      const replyText = await parseChatResponse(res);
-
-      appendMessage({
-        id: crypto.randomUUID(),
-        role: "assistant",
-        text: replyText,
+      await consumeSse(res, (c: StreamChunk) => {
+        if (c.type === "token") appendToMessage(assistantId, c.value);
+        if (c.type === "error")
+          appendToMessage(assistantId, `\n\n[ERROR] ${c.message}`);
       });
     } catch {
-      appendMessage({
-        id: crypto.randomUUID(),
-        role: "assistant",
-        text: "요청 실패 (서버/프록시/CORS 확인)",
-      });
+      appendToMessage(
+        assistantId,
+        "\n\n[ERROR] 요청 실패 (서버/프록시/CORS 확인)",
+      );
     } finally {
       setIsSending(false);
     }
-  }, [appendMessage, endpoint, input, isSending, sessionId]);
+  }, [appendMessage, appendToMessage, endpoint, input, isSending, sessionId]);
 
   const onKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {

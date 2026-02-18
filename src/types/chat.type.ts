@@ -11,3 +11,8 @@ export type ChatListItem = {
   title: string;
   active?: boolean;
 };
+
+export type StreamChunk =
+  | { type: "token"; value: string }
+  | { type: "done" }
+  | { type: "error"; message: string };

@@ -19,7 +19,7 @@ const App = () => {
   const messages = messagesByChatId[activeChatId] ?? [];
 
   const { input, setInput, isSending, send, onKeyDown, bottomRef } = useChat({
-    endpoint: "/api/chat",
+    endpoint: "/api/chat/stream",
     sessionId,
     messages,
     setMessages: (updater) => {
