@@ -35,3 +35,4 @@ export const parseChatResponse = async (res: Response): Promise<string> => {
     return text || "(응답 파싱 실패: JSON도 아니고 text도 비어있음)";
   }
 };
+
