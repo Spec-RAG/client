@@ -11,8 +11,19 @@ export default defineConfig({
     strictPort: true,
     proxy: {
       "/api": {
-        target: "http://localhost:8080/",
+        target: "http://52.79.143.219",
         changeOrigin: true,
+        secure: false,
+        // 로그용
+        configure: (proxy) => {
+          proxy.on("error", (err) => console.log("proxy error", err));
+          proxy.on("proxyReq", (proxyReq, req) =>
+            console.log("proxyReq", req.method, req.url),
+          );
+          proxy.on("proxyRes", (proxyRes, req) =>
+            console.log("proxyRes", proxyRes.statusCode, req.url),
+          );
+        },
       },
     },
   },
