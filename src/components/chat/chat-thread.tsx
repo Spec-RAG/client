@@ -23,9 +23,9 @@ export const ChatThread = ({
   bottomRef,
 }: Props) => {
   return (
-    <div className="mx-auto flex h-full w-full max-w-3xl flex-col px-4">
-      <ScrollArea className="flex-1 overflow-y-auto py-6">
-        <div className="space-y-4">
+    <div className="flex h-full w-full flex-col">
+      <ScrollArea className="flex-1 py-6">
+        <div className="mx-auto w-full max-w-3xl space-y-4 px-4">
           {messages.map((m) => (
             <div
               key={m.id}
@@ -45,7 +45,7 @@ export const ChatThread = ({
                 {m.text ? (
                   m.text
                 ) : m.role === "assistant" && isSending ? (
-                  <span className="inline-flex gap-1">
+                  <span className="inline-flex items-end gap-1 text-lg font-bold leading-none">
                     <span className="animate-bounce">.</span>
                     <span className="animate-bounce [animation-delay:0.2s]">
                       .
@@ -63,20 +63,22 @@ export const ChatThread = ({
       </ScrollArea>
 
       <div className="border-t py-4">
-        <div className="flex gap-2">
-          <Input
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={onKeyDown}
-            placeholder="메시지를 입력하세요…"
-            disabled={isSending}
-          />
-          <Button onClick={onSend} disabled={isSending || !input.trim()}>
-            {isSending ? "전송중" : "전송"}
-          </Button>
-        </div>
-        <div className="mt-2 text-xs text-muted-foreground">
-          Enter: 전송 · Shift+Enter: (현재 미지원)
+        <div className="mx-auto w-full max-w-3xl px-4">
+          <div className="flex gap-2">
+            <Input
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={onKeyDown}
+              placeholder="메시지를 입력하세요…"
+              disabled={isSending}
+            />
+            <Button onClick={onSend} disabled={isSending || !input.trim()}>
+              {isSending ? "전송중" : "전송"}
+            </Button>
+          </div>
+          <div className="mt-2 text-xs text-muted-foreground">
+            Enter: 전송 · Shift+Enter: (현재 미지원)
+          </div>
         </div>
       </div>
     </div>
