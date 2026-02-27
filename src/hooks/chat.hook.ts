@@ -11,7 +11,7 @@ type UseChatOptions = {
 };
 
 export const useChat = ({
-  endpoint = "/api/chat/stream",
+  endpoint = "/api/proxy",
   sessionId,
   messages,
   setMessages,

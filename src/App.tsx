@@ -19,7 +19,7 @@ const App = () => {
   const messages = messagesByChatId[activeChatId] ?? [];
 
   const { input, setInput, isSending, send, onKeyDown, bottomRef } = useChat({
-    endpoint: "/api/chat/rag/stream",
+    endpoint: "/api/proxy",
     sessionId,
     messages,
     setMessages: (updater) => {
