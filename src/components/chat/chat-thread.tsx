@@ -23,44 +23,46 @@ export const ChatThread = ({
   bottomRef,
 }: Props) => {
   return (
-    <div className="flex h-full w-full flex-col">
-      <ScrollArea className="flex-1 py-6">
-        <div className="mx-auto w-full max-w-3xl space-y-4 px-4">
-          {messages.map((m) => (
-            <div
-              key={m.id}
-              className={[
-                "flex",
-                m.role === "user" ? "justify-end" : "justify-start",
-              ].join(" ")}
-            >
+    <div className="flex h-full w-full min-h-0 flex-col">
+      <div className="min-h-0 flex-1">
+        <ScrollArea className="h-full">
+          <div className="mx-auto w-full max-w-3xl space-y-4 px-4 py-6">
+            {messages.map((m) => (
               <div
+                key={m.id}
                 className={[
-                  "max-w-[75%] whitespace-pre-wrap rounded-2xl px-4 py-3 text-sm leading-relaxed",
-                  m.role === "user"
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted text-foreground",
+                  "flex",
+                  m.role === "user" ? "justify-end" : "justify-start",
                 ].join(" ")}
               >
-                {m.text ? (
-                  m.text
-                ) : m.role === "assistant" && isSending ? (
-                  <span className="inline-flex items-end gap-1 text-lg font-bold leading-none">
-                    <span className="animate-bounce">.</span>
-                    <span className="animate-bounce [animation-delay:0.2s]">
-                      .
+                <div
+                  className={[
+                    "max-w-[75%] whitespace-pre-wrap rounded-2xl px-4 py-3 text-sm leading-relaxed",
+                    m.role === "user"
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted text-foreground",
+                  ].join(" ")}
+                >
+                  {m.text ? (
+                    m.text
+                  ) : m.role === "assistant" && isSending ? (
+                    <span className="inline-flex items-end gap-1 text-lg font-bold leading-none">
+                      <span className="animate-bounce">.</span>
+                      <span className="animate-bounce [animation-delay:0.2s]">
+                        .
+                      </span>
+                      <span className="animate-bounce [animation-delay:0.4s]">
+                        .
+                      </span>
                     </span>
-                    <span className="animate-bounce [animation-delay:0.4s]">
-                      .
-                    </span>
-                  </span>
-                ) : null}
+                  ) : null}
+                </div>
               </div>
-            </div>
-          ))}
-          <div ref={bottomRef} />
-        </div>
-      </ScrollArea>
+            ))}
+            <div ref={bottomRef} />
+          </div>
+        </ScrollArea>
+      </div>
 
       <div className="border-t py-4">
         <div className="mx-auto w-full max-w-3xl px-4">
