@@ -23,8 +23,8 @@ export const ChatThread = ({
   bottomRef,
 }: Props) => {
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col px-4">
-      <ScrollArea className="flex-1 py-6">
+    <div className="mx-auto flex h-full w-full max-w-3xl flex-col px-4">
+      <ScrollArea className="flex-1 overflow-y-auto py-6">
         <div className="space-y-4">
           {messages.map((m) => (
             <div
@@ -42,7 +42,19 @@ export const ChatThread = ({
                     : "bg-muted text-foreground",
                 ].join(" ")}
               >
-                {m.text}
+                {m.text ? (
+                  m.text
+                ) : m.role === "assistant" && isSending ? (
+                  <span className="inline-flex gap-1">
+                    <span className="animate-bounce">.</span>
+                    <span className="animate-bounce [animation-delay:0.2s]">
+                      .
+                    </span>
+                    <span className="animate-bounce [animation-delay:0.4s]">
+                      .
+                    </span>
+                  </span>
+                ) : null}
               </div>
             </div>
           ))}
