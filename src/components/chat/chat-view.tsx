@@ -32,7 +32,7 @@ const ChatView = ({
   bottomRef,
 }: Props) => {
   return (
-    <div className="h-screen w-screen bg-background text-foreground">
+    <div className="h-screen w-screen overflow-hidden bg-background text-foreground">
       <div className="flex h-full">
         <ChatSidebar
           title={title}
@@ -40,7 +40,7 @@ const ChatView = ({
           onNewChat={onNewChat}
           onSelectChat={onSelectChat}
         />
-        <main className="flex flex-1">
+        <main className="flex flex-1 min-h-0">
           <ChatThread
             messages={messages}
             input={input}
