@@ -4,7 +4,6 @@ const parseSseEvent = (rawEvent: string): StreamChunk[] => {
   const lines = rawEvent.split("\n");
   const chunks: StreamChunk[] = [];
 
-  // data: 로 시작하는 줄만 추출
   const dataLines = lines
     .filter((l) => l.startsWith("data:"))
     .map((l) => l.replace(/^data:\s?/, ""));
@@ -13,13 +12,11 @@ const parseSseEvent = (rawEvent: string): StreamChunk[] => {
 
   const data = dataLines.join("\n").trim();
 
-  // 스트림 종료
   if (data === "[DONE]") {
     return [{ type: "done" }];
   }
 
   try {
-    // 서버가 JSON 형태로 내려보내는 경우
     const parsed = JSON.parse(data);
 
     if (parsed.type === "chunk") {
@@ -37,11 +34,19 @@ const parseSseEvent = (rawEvent: string): StreamChunk[] => {
     }
 
     if (parsed.type === "sources") {
-      // 필요하면 sources를 따로 처리
-      // 지금은 화면에 표시 안 함
+      const sources = Array.isArray(parsed.sources)
+        ? parsed.sources.map((s: any) => ({
+            index: s.index,
+            url: s.source_url,
+          }))
+        : [];
+
+      chunks.push({
+        type: "sources",
+        sources,
+      });
     }
   } catch {
-    // JSON 파싱 실패하면 그냥 텍스트로 처리
     chunks.push({
       type: "token",
       value: data,
@@ -87,8 +92,7 @@ export const consumeSse = async (
       const rawEvent = buffer.slice(0, idx);
       buffer = buffer.slice(idx + 2);
 
-      const chunks = parseSseEvent(rawEvent);
-      chunks.forEach(onChunk);
+      parseSseEvent(rawEvent).forEach(onChunk);
     }
   }
 

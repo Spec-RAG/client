@@ -38,6 +38,15 @@ export const useChat = ({
     [setMessages],
   );
 
+  const setSourcesToMessage = useCallback(
+    (id: string, sources: { index: number; url: string }[]) => {
+      setMessages((prev) =>
+        prev.map((m) => (m.id === id ? { ...m, sources } : m)),
+      );
+    },
+    [setMessages],
+  );
+
   const send = useCallback(async () => {
     if (!sessionId) return;
     if (isSending) return;
@@ -64,8 +73,14 @@ export const useChat = ({
 
       await consumeSse(res, (c: StreamChunk) => {
         if (c.type === "token") appendToMessage(assistantId, c.value);
-        if (c.type === "error")
+
+        if (c.type === "sources") {
+          setSourcesToMessage(assistantId, c.sources);
+        }
+
+        if (c.type === "error") {
           appendToMessage(assistantId, `\n\n[ERROR] ${c.message}`);
+        }
       });
     } catch {
       appendToMessage(
@@ -75,7 +90,15 @@ export const useChat = ({
     } finally {
       setIsSending(false);
     }
-  }, [appendMessage, appendToMessage, endpoint, input, isSending, sessionId]);
+  }, [
+    appendMessage,
+    appendToMessage,
+    setSourcesToMessage,
+    endpoint,
+    input,
+    isSending,
+    sessionId,
+  ]);
 
   const onKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {

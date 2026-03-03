@@ -4,6 +4,7 @@ export type ChatMsg = {
   id: string;
   role: ChatRole;
   text: string;
+  sources?: { index: number; url: string }[];
 };
 
 export type ChatListItem = {
@@ -15,4 +16,5 @@ export type ChatListItem = {
 export type StreamChunk =
   | { type: "token"; value: string }
   | { type: "done" }
-  | { type: "error"; message: string };
+  | { type: "error"; message: string }
+  | { type: "sources"; sources: { index: number; url: string }[] };

@@ -43,6 +43,7 @@ export const ChatThread = ({
                       : "bg-muted text-foreground",
                   ].join(" ")}
                 >
+                  {/* 본문 */}
                   {m.text ? (
                     m.text
                   ) : m.role === "assistant" && isSending ? (
@@ -55,6 +56,28 @@ export const ChatThread = ({
                         .
                       </span>
                     </span>
+                  ) : null}
+
+                  {/* ✅ sources (assistant 메시지 아래) */}
+                  {m.role === "assistant" && m.sources?.length ? (
+                    <div className="mt-3 border-t pt-2 text-xs text-muted-foreground">
+                      <div className="mb-1 font-semibold">Sources</div>
+                      <ul className="space-y-1">
+                        {m.sources.map((s) => (
+                          <li key={s.index} className="break-all">
+                            [{s.index}]{" "}
+                            <a
+                              href={s.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="underline underline-offset-2"
+                            >
+                              {s.url}
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   ) : null}
                 </div>
               </div>
